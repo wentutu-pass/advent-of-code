@@ -1,16 +1,16 @@
 package core.y2020;
 
-import common.Util;
+import common.FileUtil;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Day6 {
-    private static Logger logger = Logger.getLogger("Day6");
+    private static final Logger logger = Logger.getLogger("Day6");
 
     public static void main(String[] args) {
-        String inputs = Util.readFile("src/main/resources/y2020/day6.txt");
+        String inputs = FileUtil.readFile("src/main/resources/y2020/day6.txt");
         Day6 day6 = new Day6();
         logger.log(Level.INFO, "sum of any yes is {0}", day6.getSumOfAnyYes(inputs));
         logger.log(Level.INFO, "sum of every yes is {0}", day6.getSumOfEveryYes(inputs));
@@ -20,8 +20,8 @@ public class Day6 {
         int count = 0;
         String[] string = inputs.split("\n\n");
         for (String input : string) {  //一组人
-            String[] datas = input.split("\n"); // 每个人的回答
-            Set<String> set = new HashSet<>(Arrays.asList(datas));
+            String[] dataStr = input.split("\n"); // 每个人的回答
+            Set<String> set = new HashSet<>(Arrays.asList(dataStr));
             count += set.size();
         }
         return count;
@@ -31,17 +31,17 @@ public class Day6 {
         int count = 0;
         String[] string = inputs.split("\n\n");
         for (String input : string) {  //一组人
-            String[] datas = input.split("\n"); // 每个人的回答
-            if (datas.length == 1) {
-                count += datas[0].length();
+            String[] dataStr = input.split("\n"); // 每个人的回答
+            if (dataStr.length == 1) {
+                count += dataStr[0].length();
                 continue;
             }
-            List<String> firstAnws = new ArrayList<>(Arrays.asList(datas[0].split("")));
-            for (int i = 1; i < datas.length; i++) {//第二个人的回答
-                List<String> list = Arrays.asList(datas[i].split(""));
-                firstAnws.removeIf(yes -> !list.contains(yes));
+            List<String> firstAns = new ArrayList<>(Arrays.asList(dataStr[0].split("")));
+            for (int i = 1; i < dataStr.length; i++) {//第二个人的回答
+                List<String> list = Arrays.asList(dataStr[i].split(""));
+                firstAns.removeIf(yes -> !list.contains(yes));
             }
-            count += firstAnws.size();
+            count += firstAns.size();
         }
         return count;
     }

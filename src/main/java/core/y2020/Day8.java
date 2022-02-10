@@ -1,20 +1,20 @@
 package core.y2020;
 
-import common.Util;
+import common.FileUtil;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Day8 {
-    private Queue<Integer> searchQ = new LinkedList<>();
-    private static Logger logger = Logger.getLogger("Day8");
+    private final Queue<Integer> searchQ = new LinkedList<>();
+    private static final Logger logger = Logger.getLogger("Day8");
 
     public static void main(String[] args) {
-        String inputs = Util.readFile("src/main/resources/y2020/day8.txt");
+        String inputs = FileUtil.readFile("src/main/resources/y2020/day8.txt");
         Day8 day8 = new Day8();
         logger.log(Level.INFO, "count1 {0}", day8.getAdd(inputs));
-        day8.getSearchQ(inputs);
+        day8.setSearchQ(inputs);
         logger.log(Level.INFO, "count2 {0}", day8.getAdd1(inputs, 0, false));
     }
 
@@ -35,30 +35,9 @@ public class Day8 {
         while (i >= 0 && i < string.length) {  //一个操作
             boolean add = set.add(i + " " + string[i]);
             if (!add) break;
-
-            String[] data = string[i].split(" ");
-            String caoz = data[0];
-            String suansu = data[1].substring(0, 1);
-
-            int suzi = Integer.parseInt(data[1].substring(1));
-            if (caoz.equals("nop")) {
-                i++;
-            }
-            if (suansu.equals("+")) {
-                if (caoz.equals("acc")) {
-                    count += suzi;
-                    i++;
-                } else {
-                    i += suzi;
-                }
-            } else if (suansu.equals("-")) {
-                if (caoz.equals("acc")) {
-                    count -= suzi;
-                    i++;
-                } else {
-                    i -= suzi;
-                }
-            }
+            int[] intArr = getCount(string[i].split(" "), count, i, "");
+            count = intArr[0];
+            i = intArr[1];
         }
         return count;
     }
@@ -70,11 +49,10 @@ public class Day8 {
         int i = 0;
         while (i >= 0 && i < string.length) {  //一个操作
             String[] data = string[i].split(" ");
-            String caoz = data[0];
-            String suansu = data[1].substring(0, 1);
+            String caoZ = data[0];
 
             if (replace && index == i) {
-                caoz = caoz.equals("nop") ? "jmp" : "nop";
+                caoZ = caoZ.equals("nop") ? "jmp" : "nop";
             }
             boolean add = set.add(i + " " + string[i]);
             if (!add) {
@@ -84,39 +62,47 @@ public class Day8 {
                     return 0;
                 }
             }
-            int suzi = Integer.parseInt(data[1].substring(1));
-            if (caoz.equals("nop")) {
-                i++;
-            }
-            if (suansu.equals("+")) {
-                if (caoz.equals("acc")) {
-                    count += suzi;
-                    i++;
-                } else {
-                    i += suzi;
 
-                }
-            } else if (suansu.equals("-")) {
-                if (caoz.equals("acc")) {
-                    count -= suzi;
-                    i++;
-                } else {
-                    i -= suzi;
-                }
-            }
+            int[] intArr = getCount(string[i].split(" "), count, i, caoZ);
+            count = intArr[0];
+            i = intArr[1];
         }
         return count;
     }
 
-    private Queue<Integer> getSearchQ(String oldInp) {
+    private void setSearchQ(String oldInp) {
         String[] string = oldInp.split("\n");
         for (int i = 0; i < string.length; i++) {  //一个操作
             String[] data = string[i].split(" ");
-            String caoz = data[0];
-            if (caoz.equals("nop") || caoz.equals("jmp")) {
+            String caoZ = data[0];
+            if (caoZ.equals("nop") || caoZ.equals("jmp")) {
                 searchQ.add(i);
             }
         }
-        return searchQ;
+    }
+
+    private int[] getCount(String[] data, int count, int i, String caoZ) {
+        String caoZuo = caoZ.isEmpty() ? data[0] : caoZ;
+        String suaSu = data[1].substring(0, 1);
+        int suzi = Integer.parseInt(data[1].substring(1));
+        if (caoZuo.equals("nop")) {
+            i++;
+        }
+        if (suaSu.equals("+")) {
+            if (caoZuo.equals("acc")) {
+                count += suzi;
+                i++;
+            } else {
+                i += suzi;
+            }
+        } else if (suaSu.equals("-")) {
+            if (caoZuo.equals("acc")) {
+                count -= suzi;
+                i++;
+            } else {
+                i -= suzi;
+            }
+        }
+        return new int[]{count, i};
     }
 }

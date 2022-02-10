@@ -1,6 +1,6 @@
 package core.y2020;
 
-import common.Util;
+import common.FileUtil;
 
 import java.util.Arrays;
 import java.util.logging.Level;
@@ -8,13 +8,13 @@ import java.util.logging.Logger;
 import java.util.stream.Stream;
 
 public class Day4 {
-    private static Logger logger = Logger.getLogger("Day4");
+    private static final Logger logger = Logger.getLogger("Day4");
 
     public static void main(String[] args) {
-        String inputs = Util.readFile("src/main/resources/y2020/day4.txt");
+        String inputs = FileUtil.readFile("src/main/resources/y2020/day4.txt");
         Day4 day4 = new Day4();
-        logger.log(Level.INFO, "counts of vaild passport1 is {0}", day4.getCountsOfValidPassport1(inputs));
-        logger.log(Level.INFO, "counts of vaild passport2 is {0}", day4.getCountsOfValidPassport2(inputs));
+        logger.log(Level.INFO, "counts of valid passport1 is {0}", day4.getCountsOfValidPassport1(inputs));
+        logger.log(Level.INFO, "counts of valid passport2 is {0}", day4.getCountsOfValidPassport2(inputs));
     }
 
     private int getCountsOfValidPassport1(String inputs) {
@@ -22,8 +22,8 @@ public class Day4 {
         String[] string = inputs.split("\n\n");
 
         for (String input : string) {
-            String[] datas = input.split(" |\n");
-            if (datas.length == 8 || (datas.length == 7 && Stream.of(datas).noneMatch(s -> s.startsWith("cid")))) {
+            String[] dataStr = input.split("[ \n]");
+            if (dataStr.length == 8 || (dataStr.length == 7 && Stream.of(dataStr).noneMatch(s -> s.startsWith("cid")))) {
                 count++;
             }
         }
@@ -36,12 +36,12 @@ public class Day4 {
 
         a:
         for (String input : string) {
-            String[] datas = input.split(" |\n");
-            boolean noCid = Stream.of(datas).noneMatch(s -> s.startsWith("cid"));
-            if (noCid ? datas.length != 7 : datas.length != 8) {
+            String[] dataStr = input.split("[ \n]");
+            boolean noCid = Stream.of(dataStr).noneMatch(s -> s.startsWith("cid"));
+            if (noCid ? dataStr.length != 7 : dataStr.length != 8) {
                 continue;
             }
-            for (String data : datas) {
+            for (String data : dataStr) {
                 if (data.startsWith("byr")) {
                     int byr = Integer.parseInt(data.split(":")[1]);
                     if (byr < 1920 || byr > 2002) {

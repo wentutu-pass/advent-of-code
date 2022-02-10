@@ -1,16 +1,16 @@
 package core.y2020;
 
-import common.Util;
+import common.FileUtil;
 
 import java.math.BigDecimal;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Day3 {
-    private static Logger logger = Logger.getLogger("Day3");
+    private static final Logger logger = Logger.getLogger("Day3");
 
     public static void main(String[] args) {
-        String string = Util.readFile("src/main/resources/y2020/day3.txt");
+        String string = FileUtil.readFile("src/main/resources/y2020/day3.txt");
         String[] inputs = string.split("\n");
         Day3 day3 = new Day3();
         logger.log(Level.INFO, "counts of tree1 is {0}", day3.getCountsOfTrees1(inputs));

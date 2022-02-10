@@ -1,19 +1,18 @@
 package core.y2020;
 
-import common.Util;
+import common.FileUtil;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Day10 {
-    private static Logger logger = Logger.getLogger("Day10");
-    private static HashMap<Integer, Integer> hashMap = new HashMap<>();
-    private static Queue<Integer> queue = new LinkedList<>();
-    private static HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
+    private static final Logger logger = Logger.getLogger("Day10");
+    private static final HashMap<Integer, Integer> hashMap = new HashMap<>();
+    private static final Queue<Integer> queue = new LinkedList<>();
 
     public static void main(String[] args) {
-        String inputs = Util.readFile("src/main/resources/y2020/day10.txt");
+        String inputs = FileUtil.readFile("src/main/resources/y2020/day10.txt");
         Day10 day10 = new Day10();
         String[] split = inputs.split("\n");
         int[] ints = Arrays.stream(split).mapToInt(Integer::parseInt).toArray();
@@ -70,7 +69,7 @@ public class Day10 {
 //15   10
 
     private Long getNums(int[] inputs) {
-        long count = 0l;
+        long count = 0;
         while (!queue.isEmpty()) {
             int index = queue.poll();
             count++;
@@ -96,52 +95,13 @@ public class Day10 {
         return count;
     }
 
-    private void getMaps(int[] inputs) {
-
-        for (int i = 0; i < inputs.length; i++) { //<11
-            ArrayList<Integer> list = new ArrayList<>();
-            if (i < inputs.length - 1 && inputs[i + 1] - inputs[i] <= 3) {
-                list.add(inputs[i + 1]);
-            }//<9   12 7
-            if (i < inputs.length - 2 && inputs[i + 2] - inputs[i] <= 3) {
-                list.add(inputs[i + 2]);
-            }   // <8
-            if (i < inputs.length - 3 && inputs[i + 3] - inputs[i] <= 3) {
-                list.add(inputs[i + 3]);
-            }
-            map.put(inputs[i], list);
-
-        }
-    }
-
-   /*
-    if startIndex in cache:
-        return cache[startIndex]
-
-    if startIndex == len(adapters) - 1: # we're at the end
-        cache[startIndex] = 1
-        return 1
-
-    jolts = adapters[startIndex]
-
-    totalPaths = 0
-    if jolts+1 in adapters:
-        totalPaths += pathsToEnd(adapters, adapters.index(jolts+1), cache)
-    if jolts+2 in adapters:
-        totalPaths += pathsToEnd(adapters, adapters.index(jolts+2), cache)
-    if jolts+3 in adapters:
-        totalPaths += pathsToEnd(adapters, adapters.index(jolts+3), cache)
-
-    cache[startIndex] = totalPaths
-    return totalPaths */
-
     private long getPart2(int[] ints, int index, HashMap<Integer, Long> map) {
         if (map.containsKey(index)) {
             return map.get(index);
         }
         if (index == ints.length - 1) {
-            map.put(index, 1l);
-            return 1l;
+            map.put(index, 1L);
+            return 1L;
         }
         int value = ints[index];
         long totalPath = 0;

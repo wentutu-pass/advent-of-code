@@ -1,6 +1,6 @@
 package core.y2020;
 
-import common.Util;
+import common.FileUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -9,12 +9,12 @@ import java.util.logging.Logger;
 
 
 public class Day11 {
-    private static Logger logger = Logger.getLogger("Day11");
-    static HashMap<Integer, HashMap> map = new HashMap<>();
-    static int countOfOccupiedSeat = 0;
+    private static final Logger logger = Logger.getLogger("Day11");
+    private static final HashMap<Integer, HashMap<Integer, String>> map = new HashMap<>();
+    private static int countOfOccupiedSeat = 0;
 
     public static void main(String[] args) {
-        String inputs = Util.readFile("src/main/resources/y2020/day11.txt");
+        String inputs = FileUtil.readFile("src/main/resources/y2020/day11.txt");
         Day11 day11 = new Day11();
         String[] input = inputs.split("\n");
         logger.log(Level.INFO, "the counts of seat1 is {0}", day11.getCountOfSeat1(input));
@@ -33,12 +33,13 @@ public class Day11 {
                 int countOfOccupiedSeat1 = 0;
                 if (i > 0) {
                     String[] upRow = inputs[i - 1].split("");
-                    countOfOccupiedSeat1 += j > 0 ? upRow[j - 1].equals("#") ? 1 : 0 : 0;
+                    countOfOccupiedSeat1 = detailCount(countOfOccupiedSeat1, upRow, j);
                     countOfOccupiedSeat1 += upRow[j].equals("#") ? 1 : 0;
                     countOfOccupiedSeat1 += j < upRow.length - 1 ? upRow[j + 1].equals("#") ? 1 : 0 : 0;
                 }
                 if (i < inputs.length - 1) {
                     String[] downRow = inputs[i + 1].split("");
+                    countOfOccupiedSeat1 = detailCount(countOfOccupiedSeat1, downRow, j);
                     countOfOccupiedSeat1 += j > 0 ? downRow[j - 1].equals("#") ? 1 : 0 : 0;
                     countOfOccupiedSeat1 += downRow[j].equals("#") ? 1 : 0;
                     countOfOccupiedSeat1 += j < downRow.length - 1 ? downRow[j + 1].equals("#") ? 1 : 0 : 0;
@@ -62,10 +63,13 @@ public class Day11 {
 
     }
 
+    private int detailCount(int countOfOccupiedSeat1, String[] upRow, int j) {
+        countOfOccupiedSeat1 += j > 0 ? upRow[j - 1].equals("#") ? 1 : 0 : 0;
+        return countOfOccupiedSeat1;
+    }
+
     private static void changeStates(HashMap<Integer, ArrayList<Integer>> map, String[] inputs) {
-        Iterator<Map.Entry<Integer, ArrayList<Integer>>> iterator = map.entrySet().iterator();
-        while (iterator.hasNext()) {
-            Map.Entry<Integer, ArrayList<Integer>> next = iterator.next();
+        for (Map.Entry<Integer, ArrayList<Integer>> next : map.entrySet()) {
             int row = next.getKey();
             ArrayList<Integer> value = next.getValue();
             for (int i = 0; i < inputs.length; i++) {
@@ -87,8 +91,8 @@ public class Day11 {
         int rows = input.length - 1;
         int cols = input[0].length() - 1;
         for (int i = row - 1; i >= 0; i--) {
-            String values = (String) ((HashMap) map.get(i).values()).get(col);
-            if (!values.isEmpty() && values.equals("#")) {
+            String values = map.get(i).get(col);
+            if (values.equals("#")) {
                 countOfOccupiedSeat++;
                 break;
             }
@@ -122,64 +126,57 @@ public class Day11 {
         int i = 0;
         while (i < rows) {
             if (i < row) {
-                int j = col - (row - i);
-                if (j <= cols && j >= 0) {//zuoshang
-                    if (input[i].split("")[j].equals(".")) {
-                        i++;
-                    } else if (input[i].split("")[j].equals("#")) {
-                        countOfOccupiedSeat++;
-                    }
-                }
-                i++;
+                i = detailZuo(i, col - (row - i), cols, input);
             } else
                 break;
         }
         int j = 0;
         while (j < rows) {
             if (j < row) {
-                int k = col + (row - i);
-                if (k <= cols && k >= 0) {//zuoshang
-                    if (input[j].split("")[k].equals(".")) {
-                        j++;
-                    } else if (input[j].split("")[k].equals("#")) {
-                        countOfOccupiedSeat++;
-                    }
-                }
-                j++;
+                j = detailZuo(j, col + (row - i), cols, input);
             } else
                 break;
         }
         int i1 = rows;
         while (i1 >= 0) {
             if (i1 > row) {
-                int j1 = col + (row - i);
-                if (j1 <= cols && j1 >= 0) {//zuoshang
-                    if (input[i1].split("")[j1].equals(".")) {
-                        i1--;
-                    } else if (input[i1].split("")[j1].equals("#")) {
-                        countOfOccupiedSeat++;
-                    }
-                }
-                i1--;
+                i1 = detailYou(i1, col + (row - i), col, input);
             } else
                 break;
         }
         int i2 = rows;
         while (i2 >= 0) {
             if (i2 > row) {
-                int j2 = col - (row - i);
-                if (j2 <= cols && j2 >= 0) {//zuoshang
-                    if (input[i2].split("")[j2].equals(".")) {
-                        i2--;
-                    } else if (input[i2].split("")[j2].equals("#")) {
-                        countOfOccupiedSeat++;
-                    }
-                }
-                i2--;
+                i2 = detailYou(i2, col - (row - i), col, input);
             } else
                 break;
         }
     }
+
+    private static int detailZuo(int i, int j, int cols, String[] input) {
+        if (j <= cols && j >= 0) {
+            if (input[i].split("")[j].equals(".")) {
+                i++;
+            } else if (input[i].split("")[j].equals("#")) {
+                countOfOccupiedSeat++;
+            }
+        }
+        i++;
+        return i;
+    }
+
+    private static int detailYou(int i1, int j1, int cols, String[] input) {
+        if (j1 <= cols && j1 >= 0) {
+            if (input[i1].split("")[j1].equals(".")) {
+                i1--;
+            } else if (input[i1].split("")[j1].equals("#")) {
+                countOfOccupiedSeat++;
+            }
+        }
+        i1--;
+        return i1;
+    }
+
 
     private static int getCountOfSeat2(String[] inputs) {
         HashMap<Integer, ArrayList<Integer>> map = new HashMap<>();
@@ -209,17 +206,16 @@ public class Day11 {
 
     }
 
-    public static Map<Integer, HashMap> detailData(String[] inputs) {
+    public static void detailData(String[] inputs) {
         for (int i = 0; i < inputs.length; i++) {
             String[] split = inputs[i].split("");
             HashMap<Integer, String> map1 = new HashMap<>();
-            for (int j = 0; i < split.length; j++) {
+            for (int j = 0; j < split.length; j++) {
                 if (!split[j].equals(".")) {
                     map1.put(j, split[j]);
                 }
             }
             map.put(i, map1);
         }
-        return map;
     }
 }

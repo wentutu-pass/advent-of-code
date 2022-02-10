@@ -1,16 +1,16 @@
 package core.y2020;
 
-import common.Util;
+import common.FileUtil;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class Day5 {
-    private static Logger logger = Logger.getLogger("Day5");
+    private static final Logger logger = Logger.getLogger("Day5");
 
     public static void main(String[] args) {
-        String string = Util.readFile("src/main/resources/y2020/day5.txt");
+        String string = FileUtil.readFile("src/main/resources/y2020/day5.txt");
         String[] inputs = string.split("\n");
         Day5 day5 = new Day5();
         logger.log(Level.INFO, "max seatId is {0}", day5.getMaxSeatId(inputs));
@@ -27,7 +27,7 @@ public class Day5 {
             int row = getNumByLetter(0, 127, rows);
             int col = getNumByLetter(0, 7, cols);
             int i = row * 8 + col;
-            maxSeatId = i > maxSeatId ? i : maxSeatId;
+            maxSeatId = Math.max(i, maxSeatId);
         }
         return maxSeatId;
     }

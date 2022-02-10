@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class Day7 {
-    private static Logger logger = Logger.getLogger("Day7");
+    private static final Logger logger = Logger.getLogger("Day7");
 
     public static void main(String[] args) {
         File inputFile = new File("src/main/resources/y2020/day7.txt");
@@ -19,11 +19,14 @@ public class Day7 {
         Pattern childColorPattern = Pattern.compile("[a-zA-Z]+ [a-zA-Z]+");
         HashMap<String, HashMap<String, Integer>> bagContainers = new HashMap<>();
 
-        try (Scanner fileScanner = new Scanner(inputFile);) {
+        try (Scanner fileScanner = new Scanner(inputFile)) {
             while (fileScanner.hasNext()) {
                 String nextLine = fileScanner.nextLine();
                 Matcher parentMatch = parentPattern.matcher(nextLine);
-                parentMatch.find();
+                boolean b = parentMatch.find();
+                if (!b) {
+                    throw new Exception();
+                }
                 String parent = parentMatch.group();
 
                 Matcher childMatch = childPattern.matcher(nextLine);
@@ -51,6 +54,7 @@ public class Day7 {
         logger.log(Level.INFO, "total of bags2 is {0}", totalBags2);
     }
 
+    //puzzle 1
     public static int totalBags(Map<String, List<String>> myBags) {
         HashSet<String> hashSet = new HashSet<>();//存放找出来的颜色 不重复
         Queue<String> searchQ = new LinkedList<>();//存放要寻找的颜色  找完就删除
@@ -82,11 +86,9 @@ public class Day7 {
                     .filter(kvEntry -> kvEntry.getKey().equals(nextSearch))
                     .map(Map.Entry::getValue).collect(Collectors.toList());// 找到subBag
             for (HashMap<String, Integer> map : shinyGold) {
-                Iterator it = map.entrySet().iterator();
-                while (it.hasNext()) {
-                    Map.Entry entry = (Map.Entry) it.next();
-                    String bagName = (String) entry.getKey();
-                    int value = (Integer) entry.getValue();
+                for (Map.Entry<String, Integer> entry : map.entrySet()) {
+                    String bagName = entry.getKey();
+                    int value = entry.getValue();
                     for (int i = 0; i < value; i++) {
                         searchQ.add(bagName);
                         count++;
